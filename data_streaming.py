@@ -40,11 +40,11 @@ def write_to_dynamodb(row):
     dynamodb.Table(dynamodb_sink_table).put_item(
         Item = {'userid': row['userid'], \
                 'channelid': row['channelid'],\
-                'genre': str(row['genre'],\
+                'genre': str(row['genre']),\
                 'lastactive': str(row['lastactive']),\
                 'title': str(row['title']),\
                 'watchfrequency': row['watchfrequency'],\
-                'etags': row['etags'])})
+                'etags': row['etags']})
 
 def write_to_dynamodb(row):
     dynamodb = glueContext.create_dynamic_frame.fromDF(row, glueContext, "write_to_dynamodb")
@@ -62,15 +62,15 @@ dynamodb_dynamic_frame = glueContext.create_dynamic_frame.from_options(\
     "dynamodb.input.tableName": dynamo_static_table,
     })
 
-    dynamodb_look_df = dynamodb_dynamic_frame.toDF.cache()
+dynamodb_look_df = dynamodb_dynamic_frame.toDF.cache()
 
     #Read from Kinesis Data Stream
-    netflix_data = spark.readStream \
-                        .format("kinesis") \
-                        .option("streamName", "Aleks'-demo-datastream") \
-                        .option("endpointUrl", "https://kinesis.us-west-2.amazonaws.com")
-                        .option("startingPosition", "TRIM_HORIZON") \
-                        .load()
+netflix_data = spark.readStream \
+                    .format("kinesis") \
+                    .option("streamName", "Aleks'-demo-datastream") \
+                    .option("endpointUrl", "https://kinesis.us-west-2.amazonaws.com") \
+                    .option("startingPosition", "TRIM_HORIZON") \
+                    .load()
 
 #ETL to augment with 'impression' column
 netflix_df = netflix_data.withColumn('impression',
