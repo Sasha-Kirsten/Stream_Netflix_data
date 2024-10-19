@@ -21,3 +21,15 @@ def lambda_handler(event, context):
                 if watch_frequency ==1:
                     decoded_data_dic["reaction"] = "dislike"
                     # elif watch_frequency
+                elif watch_frequency > 10:
+                    decoded_data_dic["reaction"] = "favourite"
+                else:
+                    decoded_data_dic["reaction"] = "like"
+            else:
+                decoded_data_dic["reaction"] = "undetermined"
+            
+            with table.batch_writer() as batch_writer:
+                batch_writer.put_item(Item=decoded_data_dic)
+    except Exception as e:
+        print(str(e))
+        
